@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/gpfs/commons/groups/gursoy_lab/mstoll/codes/models/data_form/load_pheno_file_counts.py", line 946, in <module>
+    data, labels, indices_env, name_envs, df_tot = dataT.get_tree_data(with_env=False, with_counts=True, load_possible=False, only_relevant=True)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 5, got 4)

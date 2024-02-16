@@ -1,0 +1,13 @@
+# Allow all directories (including subdirectories)
+!*/
+
+# Exclude the specific folder (replace 'folder_to_exclude' with the name of your folder)
+Data_Files/
+models/list_models_class/
+tests/list_tests
+
+
+**/[0-9]*
+
+**/slurm*
+plots/
