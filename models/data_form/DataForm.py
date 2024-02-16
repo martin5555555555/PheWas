@@ -28,22 +28,22 @@ def get_paths_pheno_dicts(method, rollup_depth=None):
     
 def get_paths_pheno_file(method, rollup_depth=None, with_counts=False):
         if method == 'Paul':
-            pheno_file  = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/Pheno/Paul/ukbb_omop_rolled_up_depth_{rollup_depth}_closest_ancestor.csv'
-            pheno_file_tree = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/Pheno/Paul/ukbb_omop_rolled_up_depth_{rollup_depth}_closest_ancestor_tree.npy'
-            pheno_file_tree_counts= f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/Pheno/Paul/ukbb_omop_rolled_up_depth_{rollup_depth}_closest_ancestor_tree_counts.npy'
+            pheno_file  = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Pheno/Paul/ukbb_omop_rolled_up_depth_{rollup_depth}_closest_ancestor.csv'
+            pheno_file_tree = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Pheno/Paul/ukbb_omop_rolled_up_depth_{rollup_depth}_closest_ancestor_tree.npy'
+            pheno_file_tree_counts= f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Pheno/Paul/ukbb_omop_rolled_up_depth_{rollup_depth}_closest_ancestor_tree_counts.npy'
 
         elif method == 'Abby':
-            pheno_file = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/Pheno/Abby/phenotype_embedding_df_abby.csv'
-            pheno_file_tree = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/Pheno/Abby/phenotype_embedding_df_abby_tree.npy'
+            pheno_file = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Pheno/Abby/phenotype_embedding_df_abby.csv'
+            pheno_file_tree = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Pheno/Abby/phenotype_embedding_df_abby_tree.npy'
             pheno_file_tree_counts = None
 
         return pheno_file, pheno_file_tree, pheno_file_tree_counts
 
 def get_paths_env_file():
-        env_file = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/environmental_features/env_features.csv'
+        env_file = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/environmental_features/env_features.csv'
         return env_file
 def get_paths_geno_file(CHR, SNP, binary_classes, ld):
-        label_dict = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/Geno/{CHR}/{SNP}/label_dict_bclasses={binary_classes}_ld={ld}.pkl'
+        label_dict = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Geno/{CHR}/{SNP}/label_dict_bclasses={binary_classes}_ld={ld}.pkl'
         return label_dict
 
 def map_array(tab1, tab2, i):
@@ -127,7 +127,7 @@ class DataTransfo_1SNP:
             print(f"loading data")
             # Open the file in binary write mode
             name_file = self.build_name_file()
-            data_file = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/Training/SNPS/{str(self.CHR)}/{self.SNP}/{self.method}/{name_file}'
+            data_file = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Training/SNPS/{str(self.CHR)}/{self.SNP}/{self.method}/{name_file}'
            
             with open(data_file, 'rb') as file:
                 patient_list = pickle.load(file)
@@ -177,7 +177,7 @@ class DataTransfo_1SNP:
             self.get_indices_train_test(nb_data=len(patient_list), prop_train_test=self.prop_train_test)
         if self.save_data and self.data_share==1: # saves only if all data have been processed
             print("saving data")
-            data_dir = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/Training/SNPS/{str(self.CHR)}/{self.SNP}/{self.method}/'
+            data_dir = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Training/SNPS/{str(self.CHR)}/{self.SNP}/{self.method}/'
             name_file = self.build_name_file()
             data_file = os.path.join(data_dir, name_file)
             if not os.path.exists(data_dir):
@@ -450,7 +450,7 @@ class DataTransfo_1SNP:
         self.dic_list_patients = {key:[] for key in keys }
 
         if self.load_data:
-            data_dir = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/Training/SNPS/{str(self.CHR)}/{self.SNP}/{self.method}/'
+            data_dir = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Training/SNPS/{str(self.CHR)}/{self.SNP}/{self.method}/'
             if self.decorelate:
                 name_file = f'dic_data_{self.SNP}_decorelate={self.decorelate}_thcorr={self.threshold_corr}_thrare={self.threshold_rare}_rmrare={self.remove_rare}.pkl'
             else:
@@ -483,7 +483,7 @@ class DataTransfo_1SNP:
 
 
             if self.save_data and self.data_share==1:
-                data_dir = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/Training/SNPS/{str(self.CHR)}/{self.SNP}/{self.method}/'
+                data_dir = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Training/SNPS/{str(self.CHR)}/{self.SNP}/{self.method}/'
                 if self.decorelate:
                     name_file = f'dic_data_{self.SNP}_decorelate={self.decorelate}_thcorr={self.threshold_corr}_thrare={self.threshold_rare}_rmrare={self.remove_rare}.pkl'
                 else:
