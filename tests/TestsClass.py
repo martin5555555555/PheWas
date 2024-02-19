@@ -117,7 +117,7 @@ class TrainModel():
         if self.number_test != None and update==False:
             return self.number_test
         else:
-            df_list_instance_test_saved_path = '/gpfs/commons/groups/gursoy_lab/mstoll/codes/models/list_models_class/list_instance_tests_saved.csv'
+            df_list_instance_test_saved_path = '/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/list_models_class/list_instance_tests_saved.csv'
             df_list_instance_test_saved = pd.read_csv(df_list_instance_test_saved_path)
             if len(df_list_instance_test_saved.index)==0:
                     self.number_test = 1
@@ -202,7 +202,7 @@ class TrainModel():
     def generate_dirs(self, makedirs=True):
 
         if self.model_type == 'transformer' or self.model_type == 'naive_model' or self.model_type == 'tab_transformer':
-            path = '/gpfs/commons/groups/gursoy_lab/mstoll/codes/'
+            path = '/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/'
 
             #check test name
             model_dir = path + f'logs/runs/SNPS/{str(self.CHR)}/{self.SNP}/{self.model_type}/{self.model_version}/{self.pheno_method}'
@@ -285,7 +285,7 @@ class TrainModel():
         df_list_instance_test_trained.to_csv(df_list_instance_test_trained_path, index=False)
     def add_to_saved(self):
         df_row_test = self.to_csv()
-        df_list_instance_test_saved_path = '/gpfs/commons/groups/gursoy_lab/mstoll/codes/models/list_models_class/list_instance_tests_saved.csv'
+        df_list_instance_test_saved_path = '/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/list_models_class/list_instance_tests_saved.csv'
         df_list_instance_test_saved = pd.read_csv(df_list_instance_test_saved_path)
         df_instance_test_row = self.to_csv()
         df_list_instance_test_saved =  pd.concat([df_list_instance_test_saved, df_instance_test_row], ignore_index=True)
@@ -305,7 +305,7 @@ class TrainModel():
         else:
             if not update:
                 self.get_number_test(update=True)
-            path_instance_test_save_dir= '/gpfs/commons/groups/gursoy_lab/mstoll/codes/models/list_models_class/' 
+            path_instance_test_save_dir= '/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/list_models_class/' 
             path_instance_test_save = f'{path_instance_test_save_dir}{self.get_test_name_with_infos}.pkl'
             with open(path_instance_test_save, 'wb') as file:
                 pickle.dump(self, file)
@@ -341,7 +341,7 @@ class TrainModel():
 
     def test_already_saved(self):
         
-        df_instance_tests_path = '/gpfs/commons/groups/gursoy_lab/mstoll/codes/models/list_models_class/list_instance_tests_saved.csv'
+        df_instance_tests_path = '/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/list_models_class/list_instance_tests_saved.csv'
         df_instance_tests = pd.read_csv(df_instance_tests_path)
         df_instance_tests_dropped = df_instance_tests.copy()
 
@@ -364,7 +364,7 @@ class TrainModel():
     
     @staticmethod
     def load_instance_test(instance_test_number):
-        instance_model_dir = '/gpfs/commons/groups/gursoy_lab/mstoll/codes/models/list_models_class/'
+        instance_model_dir = '/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/list_models_class/'
         for instance_test in os.listdir(instance_model_dir):
             if instance_test == 'list_instance_tests_saved.csv':
                 pass
@@ -379,7 +379,7 @@ class TrainModel():
 
     @staticmethod
     def remove_instance_test(instance_test_number):
-        instance_model_dir = '/gpfs/commons/groups/gursoy_lab/mstoll/codes/models/list_models_class/'
+        instance_model_dir = '/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/list_models_class/'
         for instance_test in os.listdir(instance_model_dir):
             if instance_test == 'list_instance_tests_saved.csv':
                 pass
@@ -392,17 +392,17 @@ class TrainModel():
 
     @staticmethod
     def remove_instance_test_df(instance_test_number):
-        df_list_instance_test_saved_path = '/gpfs/commons/groups/gursoy_lab/mstoll/codes/models/list_models_class/list_instance_tests_saved.csv'
+        df_list_instance_test_saved_path = '/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/list_models_class/list_instance_tests_saved.csv'
         df_list_instance_test_saved = pd.read_csv(df_list_instance_test_saved_path)
         df_list_instance_test_saved = df_list_instance_test_saved[ df_list_instance_test_saved['number_test'] != instance_test_number]
         df_list_instance_test_saved.to_csv(df_list_instance_test_saved_path, index=False)
 
 
     @staticmethod
-    def get_res_instance_test(instance_test_number=None, instance_test=None, actual_test=False):
+    def get_res_instance_test(instance_test_number=None, instance_test=None, actual_test=False,add=True):
         if instance_test == None:
             instance_test = TrainModel.load_instance_test(instance_test_number)
-        path_tensorboard_test_instance = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/logs/tensorboard/tests/all_instances/SNPS/{str(instance_test.CHR)}/{instance_test.SNP}/{instance_test.model_type}/{instance_test.model_version}/{instance_test.pheno_method}/{instance_test.get_test_name_with_infos}'
+        path_tensorboard_test_instance = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/logs/tensorboard/tests/all_instances/SNPS/{str(instance_test.CHR)}/{instance_test.SNP}/{instance_test.model_type}/{instance_test.model_version}/{instance_test.pheno_method}/{instance_test.get_test_name_with_infos}'
         if instance_test.number_test_trained != None:
             instance_test_trained = TrainModel.load_instance_test(instance_test_number=instance_test.number_test_trained)
             log_data_path_pickle, log_tensorboard_path, log_slurm_outputs_path, log_slurm_error_path  = instance_test_trained.generate_dirs()
@@ -414,9 +414,13 @@ class TrainModel():
 
         shutil.copytree(log_tensorboard_path, path_tensorboard_test_instance )
         if actual_test:
-            shutil.rmtree(f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/logs/tensorboard/actual_test/')
-            os.makedirs(f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/logs/tensorboard/actual_test/')
-            actual_test_dir = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/logs/tensorboard/actual_test/{instance_test.get_test_name_with_infos}'
+            if add==False:
+                shutil.rmtree(f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/logs/tensorboard/actual_test/')
+            os.makedirs(f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/logs/tensorboard/actual_test/', exist_ok=True)
+            actual_test_dir = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/logs/tensorboard/actual_test/{instance_test.get_test_name_with_infos}'
+            if os.path.exists(actual_test_dir): 
+                shutil.rmtree(actual_test_dir)
+
             shutil.copytree(path_tensorboard_test_instance, actual_test_dir)
 
 class TrainTransformerModel(TrainModel):
@@ -1092,7 +1096,7 @@ class TestSet:
     def get_analyse_res_test_set(test_set_number=None, test_set=None, actual_test=True):
         if test_set == None:
             test_set = TestSet.load_test_set_from_number(test_set_number)
-        path_tensorboard_test_set = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/logs/tensorboard/tests/{test_set.test_cat}/{test_set.test_field}/{test_set.test_name_with_infos}'
+        path_tensorboard_test_set = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/logs/tensorboard/tests/{test_set.test_cat}/{test_set.test_field}/{test_set.test_name_with_infos}'
         tensorboard_dir = test_set.test_set_tensorboard_dir
         for instance_test_nb in test_set.list_number_test:
             instance_test = TrainModel.load_instance_test(instance_test_nb)
@@ -1107,8 +1111,8 @@ class TestSet:
             if not os.path.exists(path_tensorboard_test_instance):
                 shutil.copytree(log_tensorboard_path, path_tensorboard_test_instance )
         if actual_test:
-            shutil.rmtree(f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/logs/tensorboard/actual_test/')
-            os.makedirs(f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/logs/tensorboard/actual_test/')
-            actual_test_dir = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/logs/tensorboard/actual_test/{test_set.test_cat}/{test_set.test_field}/{test_set.test_name_with_infos}'
+            shutil.rmtree(f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/logs/tensorboard/actual_test/')
+            os.makedirs(f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/logs/tensorboard/actual_test/')
+            actual_test_dir = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/logs/tensorboard/actual_test/{test_set.test_cat}/{test_set.test_field}/{test_set.test_name_with_infos}'
             
             shutil.copytree(path_tensorboard_test_set, actual_test_dir)
