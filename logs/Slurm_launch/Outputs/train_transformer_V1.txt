@@ -1,3 +1,326 @@
-beginning code
-beginning class
-data ok class
+loading data
+data_loaded in 5.931707382202148 s
+removing None values
+computing features
+/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/logs/runs/SNPS/1/rs673604/Generative_Transformer/V1/Paul/tests_generative_phenos_2/
+generating the data files
+generated files in 0.4599020481109619 seconds
+/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/logs/runs/SNPS/1/rs673604/Generative_Transformer/V1/Paul/tests_generative_phenos_2//Slurm/Outputs/tests_generative_phenos_2.txt
+beginning inference evaluation
+end inference evaluation in 139.0017488002777s
+beginning inference evaluation
+end inference evaluation in 554.1298410892487s
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+beginning inference evaluation
+end inference evaluation in 137.39038610458374s
+beginning inference evaluation
+end inference evaluation in 552.613543510437s
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+beginning inference evaluation
+end inference evaluation in 104.03513741493225s
+beginning inference evaluation
+end inference evaluation in 442.2095823287964s
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+beginning inference evaluation
+end inference evaluation in 104.78258061408997s
+beginning inference evaluation
+end inference evaluation in 451.03889751434326s
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+beginning inference evaluation
+end inference evaluation in 104.89994692802429s
+beginning inference evaluation
+end inference evaluation in 447.76067876815796s
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+beginning inference evaluation
+end inference evaluation in 103.98421454429626s
+beginning inference evaluation
+end inference evaluation in 466.3844428062439s
+beginning inference evaluation
+end inference evaluation in 138.20136332511902s
+beginning inference evaluation
+end inference evaluation in 557.3932776451111s
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+beginning inference evaluation
+end inference evaluation in 135.76800298690796s
+beginning inference evaluation
+end inference evaluation in 546.4093537330627s
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+beginning inference evaluation
+end inference evaluation in 103.56434416770935s
+beginning inference evaluation
+end inference evaluation in 437.47932052612305s
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+beginning inference evaluation
+end inference evaluation in 108.12199306488037s
+beginning inference evaluation
+end inference evaluation in 506.6243185997009s
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+beginning inference evaluation
+end inference evaluation in 103.09060668945312s
+beginning inference evaluation
+end inference evaluation in 444.44247674942017s
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+coucou
+beginning inference evaluation
+end inference evaluation in 104.10324597358704s
+beginning inference evaluation
+end inference evaluation in 442.47014689445496s

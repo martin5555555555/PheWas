@@ -34,18 +34,20 @@ def number_tests(model_dir):
 
         return last_test_nb + 1
 
-def get_name(dataT, pheno_id): ## id du pheno in a list with decay
+def get_name(dataT, pheno_id, decal = True): ## id du pheno in a list with decay
+    dec = 1 if decal else 0
     dic_phenos_reverse = {value:key for key, value in dataT.pheno_id_dict.items()}
     if isinstance(pheno_id, Iterable): 
-        return [dataT.name_dict[dic_phenos_reverse[i+1]] for i in pheno_id]
+        return [dataT.name_dict[dic_phenos_reverse[i+dec]] for i in pheno_id]
     else:
-        return dataT.name_dict[dic_phenos_reverse[pheno_id+1]]
-def get_indice(dataT, names):
+        return dataT.name_dict[dic_phenos_reverse[pheno_id+dec]]
+def get_indice(dataT, names, decal = True):
+    dec = 1 if decal else 0
     dic_name_reverse = {value:key for key, value in dataT.name_dict.items()}
     if isinstance(names, Iterable) and not (type(names)== str): 
-        return [dataT.pheno_id_dict[dic_name_reverse[name]]-1 for name in names]
+        return [dataT.pheno_id_dict[dic_name_reverse[name]]-dec for name in names]
     else:
-        return dataT.pheno_id_dict[dic_name_reverse[names]] -1
+        return dataT.pheno_id_dict[dic_name_reverse[names]] -dec
 
 # Unable bufffering for standard out
 class Unbuffered(object):

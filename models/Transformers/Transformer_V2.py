@@ -53,7 +53,13 @@ class TransformerGeneModel_V2(nn.Module):
         self.padding_mask = None
         self.device = device
         self.pheno_method = pheno_method
-        
+        self.n_layer = n_layer
+        self.n_head = n_head
+        self.binary_classes = binary_classes
+        self.Head_size = Head_size
+        self.p_dropout = p_dropout
+        self.device = device
+        self.loss_version = loss_version
         
         self.loss_version = loss_version
         self.gamma = gamma
@@ -90,6 +96,10 @@ class TransformerGeneModel_V2(nn.Module):
     def set_padding_mask_transformer(self, padding_mask, padding_mask_probas):
         self.padding_mask = padding_mask
         self.padding_mask_probas = padding_mask_probas
+    
+
+        
+
 
     def forward(self, diseases_sentence, counts_diseases, targets=None):
 
@@ -107,7 +117,7 @@ class TransformerGeneModel_V2(nn.Module):
         if self.mask_padding:
             padding_mask, padding_mask_probas = self.create_padding_mask(diseases_sentence)
             self.set_padding_mask_transformer(padding_mask, padding_mask_probas)
-            self.blocks.set_padding_mask_sequential(self.padding_mask)
+            #self.blocks.set_padding_mask_sequential(self.padding_mask)
 
         diseases_sentences_embedded = self.diseases_embedding_table(diseases_sentence) # shape B, S, E
 
@@ -119,7 +129,7 @@ class TransformerGeneModel_V2(nn.Module):
         
         if self.proj_embed:
             x = self.projection_embed(x)
-        x = self.blocks(x) # shape B, S, E
+        x = self.blocks(x, self.padding_mask) # shape B, S, E
         x = self.ln_f(x) # shape B, S, E
         logits = self.lm_head_logits(x) #shape B, S, Classes_Numb, token logits
         weights_logits = self.lm_head_proba(x).view(Batch_len, Sentence_len)
@@ -137,17 +147,15 @@ class TransformerGeneModel_V2(nn.Module):
         
         return logits, loss
     
-    def forward_decomposed(self, diseases_sentence, diseases_count):
-        self.list_attention_layers = []
+    def forward_decomposed(self, diseases_sentence, diseases_count, targets=None):
         Batch_len, Sentence_len = diseases_sentence.shape
-        print('coucou')
         diseases_sentence = diseases_sentence.to(self.device)
         counts_diseases = diseases_count.to(self.device)
 
         if self.mask_padding:
             padding_mask, padding_mask_probas = self.create_padding_mask(diseases_sentence)
             self.set_padding_mask_transformer(padding_mask, padding_mask_probas)
-            self.blocks.set_padding_mask_sequential(self.padding_mask)
+            #self.blocks.set_padding_mask_sequential(self.padding_mask)
 
         diseases_sentences_embedded = self.diseases_embedding_table(diseases_sentence) # shape B, S, E
 
@@ -157,7 +165,7 @@ class TransformerGeneModel_V2(nn.Module):
             x = x + counts_diseases_embedded # shape B, S, E 
         if self.proj_embed:
             x = self.projection_embed(x)
-        x= self.blocks.forward_decompose(x, self.list_attention_layers) # shape B, S, E
+        x= self.blocks.forward_decompose(x, self.padding_mask) # shape B, S, E
         x_out = self.ln_f(x) # shape B, S, E
         logits = self.lm_head_logits(x_out) #shape B, S, Classes_Numb, token logits
         weights_logits = self.lm_head_proba(x).view(Batch_len, Sentence_len)
@@ -167,8 +175,10 @@ class TransformerGeneModel_V2(nn.Module):
         #if self.mask_padding:
            # probas = probas * self.padding_mask_probas
         
-        logits = (logits.transpose(1, 2) @ probas.view(Batch_len, Sentence_len, 1))# (B,Classes_Numb) Weighted Average logits
-        return logits, probas, x_out
+        logits = (logits.transpose(1, 2) @ probas.view(Batch_len, Sentence_len, 1)).view(Batch_len, self.classes_nb)# (B,Classes_Numb) Weighted Average logits
+        loss = calculate_loss(logits, probas, targets, self.loss_version, self.gamma, self.alpha, L1=self.L1)
+
+        return logits, probas, x_out, loss
     
 
     def predict(self, diseases_sentence, diseases_count):
@@ -227,16 +237,16 @@ class PadMaskSequential(nn.Sequential):
     def set_padding_mask_sequential(self, padding_mask):
         self.padding_mask = padding_mask
 
-    def forward(self, x):
+    def forward(self, x, padding_mask=None):
         for module in self:
-            module.set_padding_mask_block(self.padding_mask)
-            x = module(x)
+            #module.set_padding_mask_block(self.padding_mask)
+            x = module(x, padding_mask)
         return x
     
-    def forward_decompose(self, x, list_attention_layers):
+    def forward_decompose(self, x, padding_mask):
         for module in self:
-            module.set_padding_mask_block(self.padding_mask)
-            x = module.forward_decompose(x, list_attention_layers)
+            #module.set_padding_mask_block(padding_mask)
+            x = module.forward_decompose(x, padding_mask)
         return x
     
 class Block(nn.Module):
@@ -251,20 +261,18 @@ class Block(nn.Module):
     def set_padding_mask_block(self, padding_mask):
         self.padding_mask = padding_mask
 
-    def forward(self, x):
-        self.sa.set_padding_mask_sa(self.padding_mask)
+    def forward(self, x, padding_mask):
+        #self.sa.set_padding_mask_sa(self.padding_mask)
         #x = self.ln1(x)
-        x = x + self.sa(x)
+        x = x + self.sa(x, padding_mask=None)
         x = self.ln1(x)
         x = x + self.ffwd(x)
         x = self.ln2(x)
         return x
     
-    def forward_decompose(self, x, list_attention_layers=None):
-        self.sa.set_padding_mask_sa(self.padding_mask)
-        out_sa, attention_probas = self.sa.forward_decompose(x)
-        if list_attention_layers != None:
-            list_attention_layers.append(attention_probas)
+    def forward_decompose(self, x, padding_mask=None):
+        #self.sa.set_padding_mask_sa(self.padding_mask)
+        out_sa= self.sa.forward_decompose(x, padding_mask)
         x = out_sa + x
         x = x + self.ffwd(x)
         x = self.ln2(x)
@@ -286,9 +294,10 @@ class MultiHeadSelfAttention(nn.Module):
 
     def set_padding_mask_sa(self, padding_mask):
         self.padding_mask = padding_mask
+    
 
         #self.dropout = nn.Dropout(dropout)
-    def forward(self, x):
+    def forward(self, x, padding_mask=None):
         # x of size (B, S, E)
         Batch_len, Sentence_len, _ = x.shape
         q, k, v  = self.qkv_network(x).split(self.Head_size, dim=2) #q, k, v of shape (B, S, H)
@@ -303,13 +312,13 @@ class MultiHeadSelfAttention(nn.Module):
         else:    
             attention_weights = (q_multi_head @ k_multi_head.transpose(-2, -1))/np.sqrt(self.multi_head_size) # shape B, S, S
             ### padding mask #####
-            if self.padding_mask != None:
-                padding_mask_weights = -(1-self.padding_mask)*(10**10)
+            if padding_mask != None:
+                padding_mask_weights = -(1-padding_mask)*(10**10)
                 attention_weights = (attention_weights.transpose(0, 1)+padding_mask_weights).transpose(0, 1)
             #print(f'wei0={attention_weights}')
             attention_probas = F.softmax(attention_weights, dim=-1) # shape B, S, S
-            if self.padding_mask != None:
-                attention_probas = (attention_probas.transpose(0, 1)*self.padding_mask).transpose(0, 1)
+            if padding_mask != None:
+                attention_probas = (attention_probas.transpose(0, 1)*padding_mask).transpose(0, 1)
            # attention_probas[attention_probas.isnan()]=0
             attention_probas = self.attention_dropout(attention_probas)
 
@@ -322,7 +331,7 @@ class MultiHeadSelfAttention(nn.Module):
         out = self.resid_dropout(out)
         return out        
     
-    def forward_decompose(self, x):
+    def forward_decompose(self, x, padding_mask=None):
         # x of size (B, S, E)
         Batch_len, Sentence_len, _ = x.shape
         q, k, v  = self.qkv_network(x).split(self.Head_size, dim=2) #q, k, v of shape (B, S, H)
@@ -337,16 +346,20 @@ class MultiHeadSelfAttention(nn.Module):
         else:    
             attention_weights = (q_multi_head @ k_multi_head.transpose(-2, -1))/np.sqrt(self.multi_head_size) # shape B, S, S
             ### padding mask #####
-            if self.padding_mask != None:
-                padding_mask_weights = -(1-self.padding_mask)*(10**10)
+            if padding_mask != None:
+                padding_mask_weights = -(1-padding_mask)*(10**10)
                 attention_weights = (attention_weights.transpose(0, 1)+padding_mask_weights).transpose(0, 1)
 
 
-            attention_probas = F.softmax(attention_weights, dim=-1) # shape B, S, S
-            if self.padding_mask != None:
-                attention_probas = (attention_probas.transpose(0, 1)*self.padding_mask).transpose(0, 1)
+            self.attention_probas = F.softmax(attention_weights, dim=-1)
+        
+            if padding_mask != None:
+                self.attention_probas = (self.attention_probas.transpose(0, 1)* padding_mask).transpose(0, 1)
+            self.attention_probas.retain_grad()
+
            # attention_probas[attention_probas.isnan()]=0
-            attention_probas_dropout = self.attention_dropout(attention_probas)
+            attention_probas_dropout = self.attention_dropout(self.attention_probas)
+            
 
 
             #print(f'wei1={attention_probas}')
@@ -356,7 +369,7 @@ class MultiHeadSelfAttention(nn.Module):
         out = out.transpose(1, 2).contiguous().view(Batch_len, Sentence_len, self.Head_size)
         out = self.proj(out)
         #out = self.resid_dropout(out)
-        return out, attention_probas   
+        return out
 
 class FeedForward(nn.Module):
     """ a simple linear layer followed by a non-linearity"""
@@ -372,3 +385,5 @@ class FeedForward(nn.Module):
     def forward(self, x):
         return self.net(x)
         
+
+

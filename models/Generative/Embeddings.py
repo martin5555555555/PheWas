@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import torch.nn.functional as F
 class EmbeddingPheno(nn.Module):
-    def __init__(self, method=None, vocab_size=None, Embedding_size=None, rollup_depth=4, freeze_embed=False, dicts=None, device='cpu'):
+    def __init__(self, pheno_method=None, embedding_method=None, vocab_size=None, Embedding_size=None, rollup_depth=4, freeze_embed=False, dicts=None, device='cpu'):
         super(EmbeddingPheno, self).__init__()
 
         self.dicts = dicts
@@ -12,6 +12,8 @@ class EmbeddingPheno(nn.Module):
         self.Embedding_size = Embedding_size
         self.metadata = None
         self.device = device
+        self.embedding_method = embedding_method
+        self.pheno_method = pheno_method
 
         if self.dicts != None:
             id_dict = self.dicts['id']
@@ -22,14 +24,14 @@ class EmbeddingPheno(nn.Module):
             self.metadata = [[name_dict[code], cat_dict[code]] for code in codes]
 
         
-        if method == None:
+        if embedding_method == None:
             self.distinct_diseases_embeddings = nn.Embedding(vocab_size, Embedding_size)
             #self.counts_embeddings = nn.Embedding(max_count_same_disease, Embedding_size)
             torch.nn.init.normal_(self.distinct_diseases_embeddings.weight, mean=0.0, std=0.02)
            # torch.nn.init.normal_(self.counts_embeddings.weight, mean=0.0, std=0.02)
 
-        elif method == 'Abby':
-            embedding_file_diseases = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/Embeddings/Abby/embedding_abby_no_1_diseases.pth'
+        elif embedding_method == 'Abby':
+            embedding_file_diseases = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Embeddings/Abby/embedding_abby_no_1_diseases.pth'
             pretrained_weights_diseases = torch.load(embedding_file_diseases)[diseases_present]
             self.Embedding_size = pretrained_weights_diseases.shape[1]
 
@@ -38,15 +40,18 @@ class EmbeddingPheno(nn.Module):
 
 
 
-        elif method=='Paul':
-            embedding_file_diseases = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/Embeddings/Paul_Glove/glove_UKBB_omop_rollup_closest_depth_{self.rollup_depth}_no_1_diseases.pth'
+        elif embedding_method=='Paul':
+            embedding_file_diseases = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Embeddings/Paul_Glove/glove_UKBB_omop_rollup_closest_depth_{rollup_depth}_no_1_diseases.pth'
             pretrained_weights_diseases = torch.load(embedding_file_diseases)[diseases_present]
             self.Embedding_size = pretrained_weights_diseases.shape[1]
 
             self.distinct_diseases_embeddings = nn.Embedding.from_pretrained(pretrained_weights_diseases, freeze=freeze_embed)
             #self.counts_embeddings = nn.Embedding(max_count_same_disease, self.Embedding_size)
+        if self.pheno_method == 'Paul':
+            embedding_file_diseases = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Embeddings/Paul_Glove/glove_UKBB_omop_rollup_closest_depth_{rollup_depth}_no_1_diseases.pth'
+        elif self.pheno_method == 'Abby':
+            embedding_file_diseases = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Embeddings/Abby/embedding_abby_no_1_diseases.pth'
 
-        embedding_file_diseases = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/Embeddings/Abby/embedding_abby_no_1_diseases.pth'
         pretrained_weights_diseases = torch.load(embedding_file_diseases)[diseases_present]
         pretrained_weights_diseases = pretrained_weights_diseases[1:]
         nb_phenos = pretrained_weights_diseases.shape[0]

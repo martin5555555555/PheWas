@@ -233,8 +233,19 @@ class DataTransfo_1SNP:
             unique_codes = list(df['concept_id'].values)
             occurrences = list(df['condition_occurrence_count'].values)
 
-            disease_sentence = [code for code in unique_codes]
-            counts_sentence = [count for count in occurrences]
+            #disease_sentence = [code for code in unique_codes]
+            #counts_sentence = [count for count in occurrences]
+
+            def get_sum_counts(group, i):
+                return np.sum(group['condition_occurrence_count'][group['concept_id']==i])
+
+            
+            get_sum_counts_par = np.vectorize(partial(get_sum_counts, df))
+            disease_sentence = np.array(df['concept_id'].unique())
+            counts_sentence = get_sum_counts_par(disease_sentence)
+            
+
+               
             #print(str(eid) in list(self.label_dict.keys()))
         elif method == 'Abby':
             df_t = df.transpose()
@@ -256,7 +267,12 @@ class DataTransfo_1SNP:
         
         return patient
 
-    def get_genetic_data(self):
+    def get_genetic_data(self, mut = None):
+        if mut == None:
+            CHR, SNP = self.CHR, self.SNP
+        else:
+            CHR, SNP = mut
+        geno_file = get_paths_geno_file(CHR, SNP, self.binary_classes, self.ld)
         if os.path.exists(self.geno_file):
             with open(self.geno_file, 'rb') as file:
                 label_dict = pickle.load(file)
@@ -264,6 +280,7 @@ class DataTransfo_1SNP:
             label_dict = generate_geno_file(self.CHR, self.SNP, self.binary_classes, self.ld, self.save_data)
         self.label_dict = label_dict
         return label_dict
+       
 
     def get_indices_train_test(self, nb_data=None, prop_train_test=0.8):
         if type(self.indices_train) != np.ndarray:
@@ -273,7 +290,7 @@ class DataTransfo_1SNP:
             self.indices_test = indices[int(nb_data*prop_train_test):]
         return self.indices_train, self.indices_test
     
-    def get_tree_data(self, with_env=True, with_counts=False, load_possible=True, only_relevant=False):
+    def get_tree_data(self, with_env=True, with_counts=False, load_possible=True, only_relevant=False, mut=None):
         if self.list_pheno_ids == None:
             if self.method == 'Abby':
                 pheno_data = np.load(self.pheno_file_tree)
@@ -336,15 +353,26 @@ class DataTransfo_1SNP:
             if with_env:
                 env_df = pd.read_csv(self.env_file)[['eid'] + self.list_env_features]
                 env_df.set_index('eid', inplace=True)
-            label_dict = self.get_genetic_data()
-            indices = np.isin(eids,env_df.index) & (np.isin(eids, list(label_dict.keys()))) if with_env else np.isin(eids, list(label_dict.keys()))
+                env_df = env_df[env_df.notna().all(axis=1)]
+
+            if mut == None:
+                labels_dict = [self.get_genetic_data()]
+            else:
+                labels_dict = [self.get_genetic_data(mut=gene) for gene in mut]
+
+            indices = np.ones(len(eids)).astype(bool)
+            for label_dict in labels_dict:
+                indices = indices & (np.isin(eids, list(label_dict.keys())))
+            indices = np.isin(eids,env_df.index) & (indices) if with_env else indices
+
+            
 
             env = []
             labels = []
             for eid in eids[indices]:
                 if with_env:
                     env.append(np.array(env_df.loc[eid]))
-                labels.append(label_dict[str(eid)])
+                labels.append(np.array([label_dict[str(eid)] for label_dict in labels_dict]))
 
 
             env = np.array(env)
@@ -353,8 +381,10 @@ class DataTransfo_1SNP:
             if with_env :
                 pheno_data_tot[:, 1 + nb_phenos:] = env
 
-
-            
+            if mut == None:
+                labels = labels[:,0]
+            else:
+                labels = labels
             return pheno_data_tot[:, 1:], labels, 1+nb_phenos, self.list_env_features, eids
         else:
             if self.method == 'Paul':

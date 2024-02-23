@@ -63,7 +63,7 @@ class EmbeddingPheno(nn.Module):
             torch.nn.init.normal_(self.counts_embeddings.weight, mean=0.0, std=0.02)
 
         elif method == 'Abby':
-            embedding_file_diseases = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/Embeddings/Abby/embedding_abby_no_1_diseases.pth'
+            embedding_file_diseases = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Embeddings/Abby/embedding_abby_no_1_diseases.pth'
             pretrained_weights_diseases = torch.load(embedding_file_diseases)[diseases_present]
             self.Embedding_size = pretrained_weights_diseases.shape[1]
 
@@ -73,7 +73,7 @@ class EmbeddingPheno(nn.Module):
 
 
         elif method=='Paul':
-            embedding_file_diseases = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/Embeddings/Paul_Glove/glove_UKBB_omop_rollup_closest_depth_{self.rollup_depth}_no_1_diseases.pth'
+            embedding_file_diseases = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Embeddings/Paul_Glove/glove_UKBB_omop_rollup_closest_depth_{self.rollup_depth}_no_1_diseases.pth'
             pretrained_weights_diseases = torch.load(embedding_file_diseases)[diseases_present]
             self.Embedding_size = pretrained_weights_diseases.shape[1]
 
@@ -124,7 +124,7 @@ class EmbeddingPhenoCat(nn.Module):
                     torch.nn.init.normal_(dic_embedding_cat[cat].weight, mean=0.0, std=0.02)
 
                 elif self.method == 'Abby':
-                    embedding_file_diseases = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/Embeddings/Abby/embedding_abby_no_1_diseases.pth'
+                    embedding_file_diseases = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Embeddings/Abby/embedding_abby_no_1_diseases.pth'
                     pretrained_weights_diseases = torch.load(embedding_file_diseases)[diseases_present]
                     self.Embedding_size = pretrained_weights_diseases.shape[1]
                     dic_embedding_cat[cat] = nn.Embedding.from_pretrained(pretrained_weights_diseases, freeze=freeze_embed).to(self.device)
@@ -132,7 +132,7 @@ class EmbeddingPhenoCat(nn.Module):
             
 
                 elif self.method=='Paul':
-                    embedding_file_diseases = f'/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/Embeddings/Paul_Glove/glove_UKBB_omop_rollup_closest_depth_{self.rollup_depth}_no_1_diseases.pth'
+                    embedding_file_diseases = f'/gpfs/commons/datasets/controlled/ukbb-gursoylab/mstoll/Data_Files/Embeddings/Paul_Glove/glove_UKBB_omop_rollup_closest_depth_{self.rollup_depth}_no_1_diseases.pth'
                     pretrained_weights_diseases = torch.load(embedding_file_diseases)[diseases_present]
                     self.Embedding_size = pretrained_weights_diseases.shape[1]
                     dic_embedding_cat[cat] = nn.Embedding.from_pretrained(pretrained_weights_diseases, freeze=freeze_embed).to(self.device)

@@ -45,7 +45,7 @@ list_env_features = []
 list_pheno_ids = None #list(np.load('/gpfs/commons/groups/gursoy_lab/mstoll/codes/Data_Files/phewas/list_associations_snps/rs673604_paul.npy'))#None
 ### data format
 batch_size = 150
-data_share = 1#402555
+data_share = 1/10#402555
 seuil_diseases = 600
 equalize_label = True
 decorelate = False
@@ -71,7 +71,7 @@ L1 = True
 gamma = 2
 alpha = 63
 ##### training constants
-total_epochs = 100 # number of epochs
+total_epochs = 10 # number of epochs
 learning_rate_max = 0.001 # maximum learning rate (at the end of the warmup phase)
 learning_rate_ini = 0.00001 # initial learning rate 
 learning_rate_final = 0.0001

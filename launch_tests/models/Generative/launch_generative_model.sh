@@ -15,11 +15,11 @@ sbatch --job-name="$JOB_NAME" \
         --mail-user=mstoll@nygenome.org \
         --nodes=1 \
         --cpus-per-task=2 \
-        --mem=10G \
+        --mem=100G \
         --time=20:00:00 \
         --output="$OUTPUT_FILE" \
         --error="$ERROR_FILE" \
-        --wrap="/gpfs/commons/home/mstoll/anaconda3/envs/phewas/bin/python /gpfs/commons/groups/gursoy_lab/mstoll/codes/models/Generative/test1stgenerative.py"
+        --wrap="/gpfs/commons/home/mstoll/anaconda3/envs/phewas/bin/python /gpfs/commons/groups/gursoy_lab/mstoll/codes/models/Generative/test_generative_phenos.py"
 
 echo "Submitted SLURM job for training transformer V1"
 
